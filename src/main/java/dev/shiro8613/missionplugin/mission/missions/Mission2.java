@@ -3,7 +3,7 @@ package dev.shiro8613.missionplugin.mission.missions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import dev.shiro8613.missionplugin.mission.Mission;
@@ -12,14 +12,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Mission2 extends Mission {
 
@@ -57,9 +61,7 @@ public class Mission2 extends Mission {
 
         // dangomushi codes(modified)
         player = getPlayers().get(0);
-//        getJavaPlugin().getServer().broadcast("Hello!", "");
-//        player.sendTitle("ミッション発動\n迷子のお知らせ","Subtitle",10,70,20);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP,1,1);
+        player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP,1,1);
         bar = Bukkit.createBossBar("残り時間:", BarColor.YELLOW, BarStyle.SOLID);
         tickCounter = 0;
         bar.addPlayer(player);
@@ -70,19 +72,28 @@ public class Mission2 extends Mission {
     public void Tick() {
 
         if (tickCounter == sixMin) {
+            // 失敗(タイムアップ)時の処理
             bar.removeAll();
+            final Component failTitle = Component.text("ミッション失敗", NamedTextColor.RED);
+            final Component failSubTitle = Component.text("ミッションに失敗したため、逃走者全員に発光エフェクトが付与されました。", NamedTextColor.GOLD, TextDecoration.ITALIC);
+            getJavaPlugin().getServer().showTitle(Title.title(failTitle, failSubTitle));
+            List<Player> challengers = getPlayers().stream().filter(p -> p.getScoreboard().getTeams().stream().anyMatch(sc -> sc.getName().equals("challenger"))).collect(Collectors.toList());
+            for (Player p : challengers) {
+                p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10*20, 1,false, false));
+                p.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ELDER_GUARDIAN_CURSE, Sound.Source.HOSTILE, 1f, 1.1f));
+            }
             missionEnd();
             return;
         }
         else if (tickCounter < sixMin) {
+            // 進行中の処理
             tickCounter++;
             if (tickCounter % 20 == 0) {
                 bar.setTitle("残り時間: " + (((sixMin - tickCounter) < ticks1min) ? ((sixMin - tickCounter)/20 + "秒") : ((sixMin - tickCounter)/ticks1min + "分"+ ((sixMin - tickCounter)%ticks1min)/20 +"秒")));
             }
+            //TODO: 成功時の処理
         }
 
         bar.setProgress(1.0 - ((double) tickCounter/sixMin));
-//        getJavaPlugin().getServer().sendMessage(Component.text(tickCounter));
-        //missionEnd();
     }
 }
