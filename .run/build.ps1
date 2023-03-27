@@ -34,3 +34,4 @@ ForEach-Object {
 }
 
 Write-Host "-> Done!"
+exit

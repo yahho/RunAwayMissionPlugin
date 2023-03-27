@@ -10,6 +10,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class MissionPlugin extends JavaPlugin {
 
@@ -73,7 +77,7 @@ public final class MissionPlugin extends JavaPlugin {
                 String[] missionNames = missionManager.getMissionNames();
                 sender.sendMessage(ChatColor.AQUA + "------------List------------");
                 for (int i=0; i < missionNames.length; i++) {
-                    sender.sendMessage(ChatColor.AQUA + "[" + i+1 + "] " + ChatColor.YELLOW + missionNames[i]);
+                    sender.sendMessage(ChatColor.AQUA + "[" + (i+1) + "] " + ChatColor.YELLOW + missionNames[i]);
                 }
                 sender.sendMessage(ChatColor.AQUA + "---------------------------" + ChatColor.WHITE);
                 break;
@@ -96,5 +100,32 @@ public final class MissionPlugin extends JavaPlugin {
         }
 
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        if (cmd.getName().equalsIgnoreCase("mission")) {
+            final List<String> CmdQuery = new ArrayList<>();
+            final List<String> firstCmd = new ArrayList<>();
+            firstCmd.add("start");
+            firstCmd.add("list");
+            firstCmd.add("forcestop");
+            firstCmd.add("state");
+
+            if (args.length == 0) {
+                return firstCmd;
+            }
+            if (args.length == 1) {
+                StringUtil.copyPartialMatches(args[0], firstCmd, CmdQuery);
+                return CmdQuery;
+            }
+            if (args.length == 2 && args[0].equalsIgnoreCase("start")) {
+                for (int i = 1; i <= missionManager.getMissionNames().length; i++) {
+                    CmdQuery.add(Integer.toString(i));
+                }
+                return CmdQuery;
+            }
+        }
+        return null;
     }
 }

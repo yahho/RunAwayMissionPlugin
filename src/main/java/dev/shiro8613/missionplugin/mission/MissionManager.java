@@ -64,7 +64,7 @@ public class MissionManager {
     }
 
     public boolean forceMissionStop() {
-        if(missionState) return false;
+        if(!missionState) return false;
         if(progressMission == null) return false;
         progressMission.cancel();
         missionState = false;
