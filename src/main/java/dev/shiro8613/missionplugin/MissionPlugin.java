@@ -105,26 +105,27 @@ public final class MissionPlugin extends JavaPlugin {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
         if (cmd.getName().equalsIgnoreCase("mission")) {
-            final List<String> CmdQuery = new ArrayList<>();
-            final List<String> firstCmd = new ArrayList<>();
-            firstCmd.add("start");
-            firstCmd.add("list");
-            firstCmd.add("forcestop");
-            firstCmd.add("state");
+            final List<String> argResponse = new ArrayList<>();
+            final List<String> availableSubCmd = new ArrayList<>();
+            availableSubCmd.add("start");
+            availableSubCmd.add("list");
+            availableSubCmd.add("forcestop");
+            availableSubCmd.add("state");
 
             if (args.length == 0) {
-                return firstCmd;
+                return availableSubCmd;
             }
             if (args.length == 1) {
-                StringUtil.copyPartialMatches(args[0], firstCmd, CmdQuery);
-                return CmdQuery;
+                StringUtil.copyPartialMatches(args[0], availableSubCmd, argResponse);
+                return argResponse;
             }
             if (args.length == 2 && args[0].equalsIgnoreCase("start")) {
                 for (int i = 1; i <= missionManager.getMissionNames().length; i++) {
-                    CmdQuery.add(Integer.toString(i));
+                    argResponse.add(Integer.toString(i));
                 }
-                return CmdQuery;
+                return argResponse;
             }
+            return argResponse;
         }
         return null;
     }
