@@ -37,8 +37,8 @@ public class Mission2 extends Mission {
 
     private void greet() {
         // タイトルを出す
-        final Component title = Component.text("ミッション発動: 迷子の、、お知らせです。。。", NamedTextColor.YELLOW);
-        final Component subtitle = Component.text("詳細はチャットを確認してください", NamedTextColor.GRAY, TextDecoration.ITALIC);
+        final var title = Component.text("ミッション発動: 迷子の、、お知らせです。。。", NamedTextColor.YELLOW);
+        final var subtitle = Component.text("詳細はチャットを確認してください", NamedTextColor.GRAY, TextDecoration.ITALIC);
         getJavaPlugin().getServer().showTitle(Title.title(title, subtitle));
 
         // チャットに詳細を表示
@@ -52,7 +52,7 @@ public class Mission2 extends Mission {
     @Override
     public void Init() {
         // 報酬ポーションの情報をセットする
-        PotionMeta pm = (PotionMeta) reward.getItemMeta();
+        var pm = (PotionMeta) reward.getItemMeta();
         pm.setBasePotionData(new PotionData(PotionType.SPEED));
         reward.setItemMeta(pm);
 
@@ -74,11 +74,11 @@ public class Mission2 extends Mission {
         if (tickCounter == sixMin) {
             // 失敗(タイムアップ)時の処理
             bar.removeAll();
-            final Component failTitle = Component.text("ミッション失敗", NamedTextColor.RED);
-            final Component failSubTitle = Component.text("ミッションに失敗したため、逃走者全員に発光エフェクトが付与されました。", NamedTextColor.GOLD, TextDecoration.ITALIC);
+            final var failTitle = Component.text("ミッション失敗", NamedTextColor.RED);
+            final var failSubTitle = Component.text("ミッションに失敗したため、逃走者全員に発光エフェクトが付与されました。", NamedTextColor.GOLD, TextDecoration.ITALIC);
             getJavaPlugin().getServer().showTitle(Title.title(failTitle, failSubTitle));
-            List<Player> challengers = getPlayers().stream().filter(p -> p.getScoreboard().getTeams().stream().anyMatch(sc -> sc.getName().equals("challenger"))).collect(Collectors.toList());
-            for (Player p : challengers) {
+            var challengers = getPlayers().stream().filter(p -> p.getScoreboard().getTeams().stream().anyMatch(sc -> sc.getName().equals("challenger"))).toList();
+            for (var p : challengers) {
                 p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 10*20, 1,false, false));
                 p.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ELDER_GUARDIAN_CURSE, Sound.Source.HOSTILE, 1f, 1.1f));
             }
